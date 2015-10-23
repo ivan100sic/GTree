@@ -2,6 +2,7 @@
 #include <ctime>
 #include <iostream>
 #include <algorithm>
+#include <string>
 using namespace gtree;
 using namespace std;
 
@@ -37,6 +38,23 @@ void testDestructor(int n){
 	drvo.erase(n / 5);
 }
 
+void testConst(){
+	GTree<int, string> drvo;
+	drvo.insert(1, "Serbia");
+	drvo.insert(2, "Poland");
+	drvo.insert(3, "Russia");
+
+	const GTree<int, string> cdrvo = drvo;
+
+	cout << cdrvo[2] << endl;
+	cout << cdrvo[cdrvo.maxKey()] << endl;
+
+	for (int i = drvo.minKey(); ; i = drvo.nextKey(i)){
+		cout << i << ": " << drvo[i] << endl;
+		if (i == drvo.maxKey()) break;
+	}
+}
+
 void print(int a[], int n){
 	int i;
 	for (i = 0; i < n-1; i++){
@@ -45,23 +63,14 @@ void print(int a[], int n){
 	cout << a[i] << endl;
 }
 
-int main(){
-	int n = 1000000;
-	int* a = new int[n];
-	for (int i = 0; i < n; i++) a[i] = rand() * rand();
-
-	//print(a, n);
-
+void timeTest(void (*f)()){
 	int t = clock();
-	//begin
-	gsort(a, n);
-	//testDestructor(15);
-	//end
-	int passed = clock() - t;
+	f();
+	double passed = clock() - t;
+	cout << passed / CLOCKS_PER_SEC << " seconds" << endl;
+}
 
-	//print(a, n);
-	cout << 1.*passed / CLOCKS_PER_SEC << " seconds" << endl;
-
-	delete[] a;
+int main(){
+	testConst();
 	system("pause");
 }

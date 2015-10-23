@@ -4,6 +4,7 @@
 #include <functional>
 #include <iostream>
 #include <queue>
+#include <iterator>
 using namespace std;
 
 namespace gtree {
@@ -315,28 +316,7 @@ namespace gtree {
 
 	public:
 
-		class Iterator{
-			//TODO, yo
-
-
-		};
-
-		class Imitator{
-		private:
-			Node* ptr;
-			Imitator(Node* p) : ptr(p) {}
-			Imitator(const Imitator& other);
-			Imitator operator=(const Imitator& other);
-		public:
-			Imitator operator=(const ValueT& other){
-				owner.splay(ptr);
-				ptr->value = other;
-				owner.repair(value);
-			}
-			operator ValueT()const{
-				return ptr->value;
-			}
-		};
+		//Non-const versions do not splay.
 
 		GTree():owner(){}
 
@@ -354,17 +334,18 @@ namespace gtree {
 			return owner.insert(key, value);
 		}
 
-		bool erase(const IndexT &key){
+		bool erase(const IndexT& key){
 			return owner.erase(key);
 		}
 
-		bool exists(IndexT key)const{
-			return owner.find(key, owner.root) != 0;
+		bool exists(const IndexT& key){
+			Node* p = owner.find(key, owner.root);
+			if (p) owner.splay(p);
+			return p != 0;
 		}
 
-		bool exists(IndexT key){
-			bool r = owner.find(key, owner.root) != 0;
-			owner.splay(key);
+		bool exists(const IndexT& key)const{
+			return owner.find(key, owner.root) != 0;
 		}
 
 		bool empty()const{
@@ -375,15 +356,15 @@ namespace gtree {
 			owner.clear();
 		}
 
-		ValueT operator[](IndexT key){
+		//use only for retrieving values.
+		ValueT operator[](const IndexT& key){
 			Node* p = owner.find(key, owner.root);
 			if (!p) return ValueT();
-
 			owner.splay(p);
 			return p->value;
 		}
 
-		ValueT operator[](IndexT key){
+		ValueT operator[](const IndexT& key)const{
 			Node* p = owner.find(key, owner.root);
 			if (!p) return ValueT();
 			return p->value;
@@ -392,17 +373,37 @@ namespace gtree {
 		IndexT minKey(){
 			Node* p = owner.minimum(owner.root);
 			if (!p) return IndexT();
-
 			owner.splay(p);
+			return p->key;
+		}
+
+		IndexT minKey()const{
+			Node* p = owner.minimum(owner.root);
+			if (!p) return IndexT();
 			return p->key;
 		}
 
 		IndexT maxKey(){
 			Node* p = owner.maximum(owner.root);
 			if (!p) return IndexT();
-
 			owner.splay(p);
 			return p->key;
+		}
+
+		IndexT maxKey()const{
+			Node* p = owner.maximum(owner.root);
+			if (!p) return IndexT();
+			return p->key;
+		}
+	
+		IndexT nextKey(const IndexT& key){
+			Node* p = owner.find(key, owner.root);
+			if (!p) return IndexT();
+			owner.splay(p);
+			Node* q = owner.minimum(p->right);
+			if (!q) return IndexT();
+			owner.splay(q);
+			return q->key;
 		}
 	};
 }
