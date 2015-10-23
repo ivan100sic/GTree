@@ -5,7 +5,7 @@
 #include <string>
 using namespace gtree;
 using namespace std;
-
+/*
 void gsort(int a[], int n){
 	GTree<int, int> drvo;
 	for (int i = 0; i < n; i++){
@@ -29,7 +29,7 @@ void gsort(int a[], int n){
 
 	cout << "orig " << drvo.maxKey() << endl;
 }
-
+*/
 void testDestructor(int n){
 	GTree<int> drvo;
 	for (int i = 1; i <= n; i++) drvo.insert(i);
@@ -38,20 +38,24 @@ void testDestructor(int n){
 	drvo.erase(n / 5);
 }
 
-void testConst(){
-	GTree<int, string> drvo;
-	drvo.insert(1, "Serbia");
-	drvo.insert(2, "Poland");
-	drvo.insert(3, "Russia");
+void testIterator(){
+	GTree<string, int> population;
+	population.insert("Russia", 144031000);
+	population.insert("Germany", 81276000);
+	population.insert("Turkey", 78214000);
+	population.insert("France", 67063000);
+	population.insert("United Kingdom", 65081276);
+	population.insert("Italy", 60963000);
+	population.insert("Spain", 46335000);
+	population.insert("Ukraine", 42850000);
+	population.insert("Poland", 38494000);
+	population.insert("Yugoslavia", 21706000);
+	population.insert("Romaina", 19822000);
 
-	const GTree<int, string> cdrvo = drvo;
+	population.erase("Yugoslavia");
 
-	cout << cdrvo[2] << endl;
-	cout << cdrvo[cdrvo.maxKey()] << endl;
-
-	for (int i = drvo.minKey(); ; i = drvo.nextKey(i)){
-		cout << i << ": " << drvo[i] << endl;
-		if (i == drvo.maxKey()) break;
+	for (auto it = population.begin(); it != population.outOfRange(); ++it){
+		cout << "Population of " << it.key() << " is " << it.value() << endl;
 	}
 }
 
@@ -71,6 +75,6 @@ void timeTest(void (*f)()){
 }
 
 int main(){
-	testConst();
+	testIterator();
 	system("pause");
 }
