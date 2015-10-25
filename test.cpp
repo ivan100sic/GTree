@@ -5,31 +5,7 @@
 #include <string>
 using namespace gtree;
 using namespace std;
-/*
-void gsort(int a[], int n){
-	GTree<int, int> drvo;
-	for (int i = 0; i < n; i++){
-		if (!drvo.exists(a[i])){
-			drvo.insert(a[i], 1);
-		}
-		else {
-			drvo.insert(a[i], 1 + drvo[a[i]]);
-		}
-	}
 
-	GTree<int, int> drvo2(drvo);
-
-	for (int i = 0; i < n; i++){
-		a[i] = drvo2.minKey();
-		if (drvo2[a[i]] == 1)
-			drvo2.erase(a[i]);
-		else
-			drvo2.insert(a[i], drvo2[a[i]] - 1);
-	}
-
-	cout << "orig " << drvo.maxKey() << endl;
-}
-*/
 void testDestructor(int n){
 	GTree<int> drvo;
 	for (int i = 1; i <= n; i++) drvo.insert(i);
@@ -38,25 +14,50 @@ void testDestructor(int n){
 	drvo.erase(n / 5);
 }
 
-void testIterator(){
-	GTree<string, int> population;
-	population.insert("Russia", 144031000);
-	population.insert("Germany", 81276000);
-	population.insert("Turkey", 78214000);
-	population.insert("France", 67063000);
-	population.insert("United Kingdom", 65081276);
-	population.insert("Italy", 60963000);
-	population.insert("Spain", 46335000);
-	population.insert("Ukraine", 42850000);
-	population.insert("Poland", 38494000);
-	population.insert("Yugoslavia", 21706000);
-	population.insert("Romaina", 19822000);
+GTree<string, int>& population(){
+	static GTree<string, int> population;
+	static bool alive = false;
+	if (!alive){
+		population.insert("Russia", 144031000);
+		population.insert("Germany", 81276000);
+		population.insert("Turkey", 78214000);
+		population.insert("France", 67063000);
+		population.insert("United Kingdom", 65081276);
+		population.insert("Italy", 60963000);
+		population.insert("Spain", 46335000);
+		population.insert("Ukraine", 42850000);
+		population.insert("Poland", 38494000);
+		population.insert("Yugoslavia", 21706000);
+		population.insert("Romaina", 19822000);
+		population.erase("Yugoslavia");
+		alive = true;
+	}
+	return population;
+}
 
-	population.erase("Yugoslavia");
-
-	for (auto it = population.begin(); it != population.outOfRange(); ++it){
+void testIterator(GTree<string, int>& pop){
+	for (auto it = pop.begin(); it != pop.outOfRange(); ++it){
 		cout << "Population of " << it.key() << " is " << it.value() << endl;
 	}
+}
+
+void testFind(GTree<string, int>& pop){
+	cout << pop.findEqual("Spain").key() << endl;
+	cout << (bool)pop.findEqual("Croatia") << endl;
+	
+	cout << pop.findGreater("Switzerland").key() << endl;
+	cout << pop.findGreater("Italy").key() << endl;
+
+	cout << pop.findGreaterEqual("Switzerland").key() << endl;
+	cout << pop.findGreaterEqual("Italy").key() << endl;
+
+	cout << pop.findSmaller("Switzerland").key() << endl;
+	cout << pop.findSmaller("Italy").key() << endl;
+
+	cout << pop.findSmallerEqual("Switzerland").key() << endl;
+	cout << pop.findSmallerEqual("Italy").key() << endl;
+
+	cout << (bool)pop.findGreaterEqual("zz") << endl;
 }
 
 void print(int a[], int n){
@@ -75,6 +76,7 @@ void timeTest(void (*f)()){
 }
 
 int main(){
-	testIterator();
+	testIterator(population());
+	testFind(population());
 	system("pause");
 }

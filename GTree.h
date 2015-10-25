@@ -168,6 +168,26 @@ namespace gtree {
 				return 0;
 			}
 
+			template<bool goLeftOnEqual, bool keepEqual>
+			Node* find2(const IndexT& key, Node* node)const{
+				Node* result = 0;
+				while (node){
+					if (smaller(node->key, key)){
+						if (goLeftOnEqual) result = node;
+						node = node->right;
+					}
+					else if (smaller(key, node->key)){
+						if (!goLeftOnEqual) result = node;
+						node = node->left;
+					}					
+					else {
+						if (keepEqual) return node;
+						node = goLeftOnEqual ? node->left : node->right;
+					}
+				}
+				return result;
+			}
+
 			template<bool propagate>
 			void repair(Node* node){
 				if (!node) return;
@@ -395,8 +415,9 @@ namespace gtree {
 			return *this;
 		}
 
-		bool insert(const IndexT& key, const ValueT& value = ValueT()){
-			return owner.insert(key, value);
+		pair<Iterator, bool> insert(const IndexT& key, const ValueT& value = ValueT()){
+			bool ok = owner.insert(key, value);
+			return make_pair(Iterator(owner, owner.root), ok);
 		}
 
 		bool erase(const IndexT& key){
@@ -449,6 +470,36 @@ namespace gtree {
 			return Iterator(owner, 0);
 		}
 		
+		Iterator findEqual(const IndexT& key){
+			Node* ptr = owner.find(key, owner.root);
+			owner.splay(ptr);
+			return Iterator(owner, ptr);
+		}
+
+		Iterator findSmallerEqual(const IndexT& key){
+			Node* ptr = owner.find2<true, true>(key, owner.root);
+			owner.splay(ptr);
+			return Iterator(owner, ptr);
+		}
+
+		Iterator findGreaterEqual(const IndexT& key){
+			Node* ptr = owner.find2<false, true>(key, owner.root);
+			owner.splay(ptr);
+			return Iterator(owner, ptr);
+		}
+
+		Iterator findSmaller(const IndexT& key){
+			Node* ptr = owner.find2<true, false>(key, owner.root);
+			owner.splay(ptr);
+			return Iterator(owner, ptr);
+		}
+
+		Iterator findGreater(const IndexT& key){
+			Node* ptr = owner.find2<false, false>(key, owner.root);
+			owner.splay(ptr);
+			return Iterator(owner, ptr);
+		}
+
 	};
 }
 
