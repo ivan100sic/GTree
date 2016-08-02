@@ -6,18 +6,17 @@
 #include <queue>
 #include <iterator>
 #include <utility>
+
+#include "common.h"
+
 using namespace std;
 
 namespace gtree {
 
-	struct Void {
-		Void operator+ (const Void& d) const{ return *this; }
-	};
-
 	template<class IndexT, class ValueT = Void, class Comp = less<IndexT>, class Plus = plus<ValueT>>
-	class GTree{
+	class GTree {
 	private:
-		struct Node{
+		struct Node {
 			Node* left;
 			Node* right;
 			Node* parent;
@@ -26,11 +25,11 @@ namespace gtree {
 
 			Node(const IndexT& keyInit, const ValueT& valueInit) :
 				left(0), right(0), parent(0),
-				key(keyInit), value(valueInit), totalValue(valueInit){}
+				key(keyInit), value(valueInit), totalValue(valueInit) {}
 
 		};
 
-		struct GTreeOwner{
+		struct GTreeOwner {
 			//Rule of thumb: private functions do not splay their results
 
 			Comp smaller;

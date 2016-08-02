@@ -1,4 +1,5 @@
 #include "GTree.h"
+#include "GTreeLazy.h"
 #include <ctime>
 #include <iostream>
 #include <algorithm>
